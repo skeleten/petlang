@@ -1,0 +1,4 @@
+target
+
+src/parser/*.rs
+!src/parser/mod.rs

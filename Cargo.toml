@@ -1,0 +1,11 @@
+[package]
+name = "petlang"
+version = "0.1.0"
+authors = ["skeleten <skele@ymail.com>"]
+build = "build.rs"
+
+[build-dependencies]
+lalrpop = "0.12"
+
+[dependencies]
+lalrpop-util = "0.12"

@@ -1,0 +1,29 @@
+use ::ast;
+use std::str::FromStr;
+
+grammar;
+
+pub Ident: ast::Ident
+    = <s:r"[a-zA-Z_][a-zA-Z0-9_]*">
+    => ast::Ident(s.to_string());
+
+pub Num: ast::Num
+    = r"-?[0-9]*"
+    => ast::Num(isize::from_str(<>).unwrap());
+
+pub ParamList: Vec<ast::Ident>
+    = <v:(<Ident> ",")*> <e:Ident?> => match e {
+        None => v,
+        Some(e) => {
+            let mut v = v;
+            v.push(e);
+            v
+        }
+    };
+
+pub FuncHead: ast::FuncHead
+    = "fn" <name: Ident> "(" <params: ParamList> ")"
+    => ast::FuncHead {
+        name: name,
+        params: params
+    };
