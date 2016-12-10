@@ -38,25 +38,25 @@ fn parse_paramlist_empty() {
 #[test]
 fn parse_paramlist_single() {
     assert_eq!(parser::parse_ParamList("foo"),
-               Ok(vec![ ast::Ident("foo".to_string()) ]));
+               Ok(vec![ ast::RVal::LVal(ast::LVal::Var(ast::Ident("foo".to_string()))) ]));
 }
 
 #[test]
 fn parse_paramlist_many() {
     assert_eq!(parser::parse_ParamList("foo, bar"),
-               Ok(vec![ ast::Ident("foo".to_string()),
-                        ast::Ident("bar".to_string())]));
+               Ok(vec![ ast::RVal::LVal(ast::LVal::Var(ast::Ident("foo".to_string()))),
+                        ast::RVal::LVal(ast::LVal::Var(ast::Ident("bar".to_string())))]));
 }
 
 #[test]
 fn parse_funchead() {
     // we don't need to exhaustively test the parsing of parmlist here
     // since we already did that above
-    assert_eq!(parser::parse_FuncHead("fn foo(bar, baz)"),
+    assert_eq!(parser::parse_FuncHead("fn foo(1, 2)"),
                Ok(ast::FuncHead {
                    name: ast::Ident("foo".to_string()),
-                   params: vec![ ast::Ident("bar".to_string()),
-                                 ast::Ident("baz".to_string()) ],
+                   params: vec![ ast::RVal::Num(ast::Num(1)),
+                                 ast::RVal::Num(ast::Num(2)) ],
                }));
 }
 
@@ -68,4 +68,33 @@ fn parse_num() {
                Ok(ast::Num(-123)));
     assert_eq!(parser::parse_Num("0"),
                Ok(ast::Num(0)));
+}
+
+#[test]
+fn parse_val_var() {
+    assert_eq!(parser::parse_RVal("foo"),
+               Ok(ast::RVal::LVal(
+                   ast::LVal::Var(
+                       ast::Ident("foo".to_string())))));
+}
+
+#[test]
+fn parse_val_num() {
+    assert_eq!(parser::parse_RVal("123"),
+               Ok(ast::RVal::Num(ast::Num(123))));
+}
+
+#[test]
+fn parse_aexp() {
+    assert_eq!(parser::parse_AExp("1 + 2"),
+               Ok(ast::AExp::Add(Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(1)))),
+                                 Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(2)))))));
+    assert_eq!(parser::parse_AExp("1 + 2 * bar"),
+               Ok(ast::AExp::Add(Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(1)))),
+                                 Box::new(ast::AExp::Mul(
+                                     Box::new(ast::AExp::Val(
+                                         ast::RVal::Num(ast::Num(2)))),
+                                     Box::new(ast::AExp::Val(
+                                         ast::RVal::LVal(
+                                             ast::LVal::Var(ast::Ident("bar".to_string()))))))))));
 }

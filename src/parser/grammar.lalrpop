@@ -11,8 +11,44 @@ pub Num: ast::Num
     = r"-?[0-9]*"
     => ast::Num(isize::from_str(<>).unwrap());
 
-pub ParamList: Vec<ast::Ident>
-    = <v:(<Ident> ",")*> <e:Ident?> => match e {
+pub AExp: ast::AExp = AExp_Add_Sub => <>;
+
+AExp_Add_Sub: ast::AExp = {
+    <f:AExp_Add_Sub> "+" <s:AExp_Mul_Div> =>
+        ast::AExp::Add(Box::new(f),
+                       Box::new(s)),
+    <f:AExp_Add_Sub> "-" <s:AExp_Mul_Div> =>
+        ast::AExp::Sub(Box::new(f),
+                       Box::new(s)),
+    AExp_Mul_Div => <>,
+};
+
+AExp_Mul_Div: ast::AExp = {
+    <f: AExp_Mul_Div> "*" <s: AExp_Recur> =>
+        ast::AExp::Mul(Box::new(f),
+                       Box::new(s)),
+    <f: AExp_Mul_Div> "/" <s: AExp_Recur> =>
+        ast::AExp::Div(Box::new(f),
+                       Box::new(s)),
+    AExp_Recur => <>,
+};
+
+AExp_Recur: ast::AExp = {
+    RVal => ast::AExp::Val(<>),
+    "(" <e:AExp> ")" => e,
+};
+
+pub RVal: ast::RVal = {
+    Num   => ast::RVal::Num(<>),
+    LVal  => ast::RVal::LVal(<>),
+};
+
+pub LVal: ast::LVal = {
+    Ident => ast::LVal::Var(<>),
+};
+
+pub ParamList: Vec<ast::RVal>
+    = <v:(<RVal> ",")*> <e:RVal?> => match e {
         None => v,
         Some(e) => {
             let mut v = v;
