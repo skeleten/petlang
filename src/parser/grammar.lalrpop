@@ -39,13 +39,18 @@ AExp_Recur: ast::AExp = {
 };
 
 pub RVal: ast::RVal = {
-    Num   => ast::RVal::Num(<>),
-    LVal  => ast::RVal::LVal(<>),
+    FuncCall => ast::RVal::FuncCall(<>),
+    Num      => ast::RVal::Num(<>),
+    LVal     => ast::RVal::LVal(<>),
 };
 
 pub LVal: ast::LVal = {
     Ident => ast::LVal::Var(<>),
 };
+
+pub FuncCall: ast::FuncCall
+    = <i: Ident> "(" <args: ParamList> ")"
+    => ast::FuncCall { name: i, args: args };
 
 pub ParamList: Vec<ast::RVal>
     = <v:(<RVal> ",")*> <e:RVal?> => match e {

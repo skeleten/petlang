@@ -16,6 +16,7 @@ pub type ParamList = Vec<RVal>;
 pub enum RVal {
     Num(Num),
     LVal(LVal),
+    FuncCall(FuncCall),
 }
 
 #[derive(Eq, PartialEq, Debug)]
@@ -31,3 +32,12 @@ pub enum AExp {
     Mul(Box<AExp>, Box<AExp>),
     Div(Box<AExp>, Box<AExp>),
 }
+
+#[derive(Eq, PartialEq, Debug)]
+pub struct FuncCall {
+    pub name: Ident,
+    pub args: ParamList,
+}
+
+#[derive(Eq, PartialEq, Debug)]
+pub struct Assign(pub LVal, pub RVal);

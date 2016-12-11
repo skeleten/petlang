@@ -98,3 +98,18 @@ fn parse_aexp() {
                                          ast::RVal::LVal(
                                              ast::LVal::Var(ast::Ident("bar".to_string()))))))))));
 }
+
+#[test]
+fn parse_funccall() {
+    assert_eq!(parser::parse_FuncCall("foo(1)"),
+               Ok(ast::FuncCall {
+                   name: ast::Ident("foo".to_string()),
+                   args: vec![ ast::RVal::Num(ast::Num(1)) ]
+               }))
+}
+
+#[test]
+fn parse_lval_var() {
+    assert_eq!(parser::parse_LVal("foo"),
+               Ok(ast::LVal::Var(ast::Ident("foo".to_string()))));
+}
