@@ -1,10 +1,10 @@
 #[derive(Eq, PartialEq, Debug)]
 pub struct Ident(pub String);
 
-#[derive(Eq, PartialEq, Debug)]
-pub struct Num(pub isize);
+#[derive(Debug)]
+pub struct Num(pub f64);
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub struct FuncHead {
     pub name: Ident,
     pub params: ParamList,
@@ -12,7 +12,7 @@ pub struct FuncHead {
 
 pub type ParamList = Vec<RVal>;
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub enum RVal {
     Num(Num),
     LVal(LVal),
@@ -29,11 +29,17 @@ pub enum LVal {
     Var(Ident),
 }
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub struct FuncCall {
     pub name: Ident,
     pub args: ParamList,
 }
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
+pub enum Command {
+    RVal(RVal),
+    Assign(Assign),
+}
+
+#[derive(Debug)]
 pub struct Assign(pub LVal, pub RVal);
