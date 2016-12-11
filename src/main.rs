@@ -2,12 +2,23 @@ mod ast;
 mod eval;
 mod parser;
 
-#[cfg(test)]
-mod tests;
-
 fn main() {
-    let mut s = String::new();
-    std::io::stdin().read_line(&mut s).unwrap();
-    let head = parser::parse_RVal(&s);
-    println!("{:#?}", head);
+    let mut ctx = eval::EvalContext::new();
+
+    loop {
+        let mut s = String::new();
+        std::io::stdin().read_line(&mut s).unwrap();
+        let head = match parser::parse_Command(&s) {
+            Ok(h) => h,
+            Err(e) => {
+                println!("Couldn't parse '{}': {:#?}", s, e);
+                continue;
+            }
+        };
+        let result = eval::eval_cmd(&head, &mut ctx);
+        match result {
+            Ok(val)  => println!("{}", val),
+            Err(err) => println!("{}", err),
+        }
+    }
 }
