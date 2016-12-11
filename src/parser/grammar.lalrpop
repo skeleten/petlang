@@ -11,36 +11,36 @@ pub Num: ast::Num
     = r"-?[0-9]*"
     => ast::Num(isize::from_str(<>).unwrap());
 
-pub AExp: ast::AExp = AExp_Add_Sub => <>;
+pub AExp: ast::RVal = AExp_Add_Sub => <>;
 
-AExp_Add_Sub: ast::AExp = {
+AExp_Add_Sub: ast::RVal = {
     <f:AExp_Add_Sub> "+" <s:AExp_Mul_Div> =>
-        ast::AExp::Add(Box::new(f),
-                       Box::new(s)),
+        ast::RVal::OpAdd(Box::new(f),
+                         Box::new(s)),
     <f:AExp_Add_Sub> "-" <s:AExp_Mul_Div> =>
-        ast::AExp::Sub(Box::new(f),
-                       Box::new(s)),
+        ast::RVal::OpSub(Box::new(f),
+                         Box::new(s)),
     AExp_Mul_Div => <>,
 };
 
-AExp_Mul_Div: ast::AExp = {
+AExp_Mul_Div: ast::RVal = {
     <f: AExp_Mul_Div> "*" <s: AExp_Recur> =>
-        ast::AExp::Mul(Box::new(f),
-                       Box::new(s)),
+        ast::RVal::OpMul(Box::new(f),
+                         Box::new(s)),
     <f: AExp_Mul_Div> "/" <s: AExp_Recur> =>
-        ast::AExp::Div(Box::new(f),
-                       Box::new(s)),
+        ast::RVal::OpDiv(Box::new(f),
+                         Box::new(s)),
     AExp_Recur => <>,
 };
 
-AExp_Recur: ast::AExp = {
-    RVal_Non_Arith   => ast::AExp::Val(<>),
+AExp_Recur: ast::RVal = {
+    RVal_Non_Arith   => <>,
     "(" <e:AExp> ")" => e,
 };
 
 pub RVal: ast::RVal = {
-    RVal_Non_Arith => <>,
-    AExp           => ast::RVal::AExp(Box::new(<>)),
+    // RVal_Non_Arith => <>,
+    AExp           => <>,
 };
 
 RVal_Non_Arith: ast::RVal = {

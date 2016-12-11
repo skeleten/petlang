@@ -87,16 +87,8 @@ fn parse_val_num() {
 #[test]
 fn parse_aexp() {
     assert_eq!(parser::parse_AExp("1 + 2"),
-               Ok(ast::AExp::Add(Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(1)))),
-                                 Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(2)))))));
-    assert_eq!(parser::parse_AExp("1 + 2 * bar"),
-               Ok(ast::AExp::Add(Box::new(ast::AExp::Val(ast::RVal::Num(ast::Num(1)))),
-                                 Box::new(ast::AExp::Mul(
-                                     Box::new(ast::AExp::Val(
-                                         ast::RVal::Num(ast::Num(2)))),
-                                     Box::new(ast::AExp::Val(
-                                         ast::RVal::LVal(
-                                             ast::LVal::Var(ast::Ident("bar".to_string()))))))))));
+               Ok(ast::RVal::OpAdd(Box::new(ast::RVal::Num(ast::Num(1))),
+                                   Box::new(ast::RVal::Num(ast::Num(2))))));
 }
 
 #[test]

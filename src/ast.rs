@@ -17,21 +17,16 @@ pub enum RVal {
     Num(Num),
     LVal(LVal),
     FuncCall(FuncCall),
-    AExp(Box<AExp>),
+    
+    OpAdd(Box<RVal>, Box<RVal>),
+    OpSub(Box<RVal>, Box<RVal>),
+    OpMul(Box<RVal>, Box<RVal>),
+    OpDiv(Box<RVal>, Box<RVal>),
 }
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum LVal {
     Var(Ident),
-}
-
-#[derive(Eq, PartialEq, Debug)]
-pub enum AExp {
-    Val(RVal),
-    Add(Box<AExp>, Box<AExp>),
-    Sub(Box<AExp>, Box<AExp>),
-    Mul(Box<AExp>, Box<AExp>),
-    Div(Box<AExp>, Box<AExp>),
 }
 
 #[derive(Eq, PartialEq, Debug)]
