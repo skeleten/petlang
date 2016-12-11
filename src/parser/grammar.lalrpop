@@ -34,11 +34,16 @@ AExp_Mul_Div: ast::AExp = {
 };
 
 AExp_Recur: ast::AExp = {
-    RVal => ast::AExp::Val(<>),
+    RVal_Non_Arith   => ast::AExp::Val(<>),
     "(" <e:AExp> ")" => e,
 };
 
 pub RVal: ast::RVal = {
+    RVal_Non_Arith => <>,
+    AExp           => ast::RVal::AExp(Box::new(<>)),
+};
+
+RVal_Non_Arith: ast::RVal = {
     FuncCall => ast::RVal::FuncCall(<>),
     Num      => ast::RVal::Num(<>),
     LVal     => ast::RVal::LVal(<>),

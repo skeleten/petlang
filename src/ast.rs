@@ -17,6 +17,7 @@ pub enum RVal {
     Num(Num),
     LVal(LVal),
     FuncCall(FuncCall),
+    AExp(Box<AExp>),
 }
 
 #[derive(Eq, PartialEq, Debug)]
