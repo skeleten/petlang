@@ -17,7 +17,7 @@ pub enum RVal {
     Num(Num),
     LVal(LVal),
     FuncCall(FuncCall),
-    
+
     OpAdd(Box<RVal>, Box<RVal>),
     OpSub(Box<RVal>, Box<RVal>),
     OpMul(Box<RVal>, Box<RVal>),

@@ -39,7 +39,6 @@ AExp_Recur: ast::RVal = {
 };
 
 pub RVal: ast::RVal = {
-    // RVal_Non_Arith => <>,
     AExp           => <>,
 };
 
