@@ -43,3 +43,27 @@ pub enum Command {
 
 #[derive(Debug)]
 pub struct Assign(pub LVal, pub RVal);
+
+#[derive(Debug)]
+pub enum BExp {
+    Eq(RVal, RVal),
+    Neq(RVal, RVal),
+
+    Le(RVal, RVal),
+    Leq(RVal, RVal),
+
+    Ge(RVal, RVal),
+    Geq(RVal, RVal),
+
+    Not(Box<BExp>),
+    And(Box<BExp>, Box<BExp>),
+    Or(Box<BExp>, Box<BExp>),
+
+    Val(BVal),
+}
+
+#[derive(Debug)]
+pub enum BVal {
+    True,
+    False,
+}

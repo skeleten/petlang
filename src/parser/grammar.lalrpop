@@ -81,3 +81,24 @@ pub FuncHead: ast::FuncHead
         name: name,
         params: params
     };
+
+pub BVal: ast::BVal = {
+    "True"  => ast::BVal::True,
+    "False" => ast::BVal::False,
+};
+
+pub BExp: ast::BExp = {
+    BExp_0    => <>,
+    BVal      => ast::BExp::Val(<>),
+};
+
+BExp_0: ast::BExp = {
+    <lhs: RVal> ">" <rhs: RVal>  => ast::BExp::Ge(lhs, rhs),
+    <lhs: RVal> ">=" <rhs: RVal> => ast::BExp::Geq(lhs, rhs),
+
+    <lhs: RVal> "<" <rhs: RVal>  => ast::BExp::Le(lhs, rhs),
+    <lhs: RVal> "<=" <rhs: RVal> => ast::BExp::Leq(lhs, rhs),
+
+    // BExp_1 => <>,
+};
+
