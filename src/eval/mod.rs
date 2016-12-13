@@ -10,7 +10,7 @@ pub struct EvalContext {
     inner: Option<Box<EvalContext>>,
 }
 
-impl<'a> EvalContext<'a> {
+impl EvalContext {
     pub fn new() -> Self {
         EvalContext {
             bindings: HashMap::new(),
@@ -19,22 +19,12 @@ impl<'a> EvalContext<'a> {
         }
     }
 
-    pub fn with_inner(inner: Box<EvalContext>) -> Self {
-        
-    }
-
     pub fn register_builtins(&mut self) {
         builtins::register(self);
     }
 
     pub fn assign(&mut self, name: &str, value: InternValue) {
         self.bindings.insert(name.to_string(), value);
-    }
-}
-
-impl std::clone::Clone for EvalContext {
-    fn clone(&self) -> Self {
-        
     }
 }
 
@@ -68,7 +58,7 @@ pub fn eval_cmd_assign(assign: &ast::Assign, ctx: &mut EvalContext)
     let &ast::Assign(ref lhs, ref rhs) = assign;
     let rhs = eval_rval(&rhs, ctx)?;
 
-    match lhs{ 
+    match lhs{
         &ast::LVal::Var(ast::Ident(ref s)) => ctx.assign(&s, rhs),
     };
 
