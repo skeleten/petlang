@@ -55,6 +55,7 @@ impl BuiltinTable {
 #[derive(Clone)]
 pub enum InternValue {
     Number(f64),
+    Bool(bool),
     BuiltinFunction(String),
 }
 
@@ -75,6 +76,38 @@ pub fn eval_cmd(cmd: &ast::Command, ctx: &mut EvalContext)
     match *cmd {
         ast::Command::RVal(ref rval) => eval_rval(&rval, ctx),
         ast::Command::Assign(ref assign) => eval_cmd_assign(&assign, ctx),
+        ast::Command::Block(ref blk) => eval_cmd_block(&blk, ctx),
+        ast::Command::If(ref cmd) => eval_cmd_if(&cmd, ctx),
+    }
+}
+
+pub fn eval_cmd_if(cmd: &ast::If, ctx: &mut EvalContext)
+                   -> Result<InternValue, EvalError> {
+    let bexp = eval_bexp(&cmd.cond, ctx)?;
+    if let InternValue::Bool(ref b) = bexp {
+        if *b {
+            eval_cmd_block(&cmd.then_case, ctx)
+        } else {
+            eval_cmd_block(&cmd.else_case, ctx)
+        }
+    } else {
+        Err(EvalError::TypeMistmatch)
+    }
+    //    let cond_value = eval_bexp(cmd, ctx)?;
+}
+
+pub fn eval_cmd_block(block: &ast::Block, ctx: &mut EvalContext)
+                      -> Result<InternValue, EvalError> {
+    let mut new_ctx = EvalContext::new_with_inner(ctx.clone());
+    let mut last_result = None;
+    for cmd in block.iter() {
+        let result = eval_cmd(cmd, &mut new_ctx)?;
+        last_result = Some(result);
+    };
+
+    match last_result {
+        Some(v) => Ok(v),
+        None => Ok(InternValue::Number(0.0)),
     }
 }
 
@@ -107,7 +140,7 @@ fn eval_rval_lval(val: &ast::LVal, ctx: &mut EvalContext)
                   -> Result<InternValue, EvalError> {
     let val = eval_lval(val, ctx)?;
     match val {
-        &InternValue::Number(ref n) => Ok(InternValue::Number(n.clone())),
+        InternValue::Number(n) => Ok(InternValue::Number(n)),
 
         _ => Err(EvalError::NotImplemented),
     }
@@ -178,22 +211,31 @@ fn eval_rval_funccall(call: &ast::FuncCall, ctx: &mut EvalContext)
     }
 }
 
-fn eval_lval<'a>(lval: &ast::LVal, ctx: &'a mut EvalContext)
-             -> Result<&'a InternValue, EvalError> {
+fn eval_lval(lval: &ast::LVal, ctx: &mut EvalContext)
+             -> Result<InternValue, EvalError> {
     match *lval {
         ast::LVal::Var(ref id) => eval_lval_var(&id, ctx),
     }
 }
 
-fn eval_lval_var<'a>(id: &ast::Ident, ctx: &'a mut EvalContext)
-                 -> Result<&'a InternValue, EvalError> {
+fn eval_lval_var(id: &ast::Ident, ctx: &mut EvalContext)
+                 -> Result<InternValue, EvalError> {
     if let Some(val) = ctx.bindings.get(&id.0) {
-        Ok(val)
+        Ok(val.clone())
+    } else if let Some(ref mut inner_ctx) = ctx.inner {
+        eval_lval_var(id, &mut inner_ctx.clone()).clone()
     } else {
         Err(EvalError::UnboundVariable)
     }
 }
 
+fn eval_bexp(exp: &ast::BExp, ctx: &mut EvalContext)
+             -> Result<InternValue, EvalError> {
+    Err(EvalError::NotImplemented)
+}
+
+
+#[derive(Debug, Clone)]
 pub enum EvalError {
     TypeMistmatch,
     UnboundVariable,

@@ -5,12 +5,34 @@ grammar;
 
 pub Command: ast::Command = {
     Assign => ast::Command::Assign(<>),
+    Block  => ast::Command::Block(<>),
     RVal   => ast::Command::RVal(<>),
+    If     => ast::Command::If(<>),
+    IfEl   => ast::Command::If(<>)
 };
 
 Assign: ast::Assign
     = <lhs: LVal> "<-" <rhs: RVal>
     => ast::Assign(lhs, rhs);
+
+If: ast::If
+    = "if" "(" <cond: BExp> ")" <then: Block>
+    => ast::If::new(cond, then);
+
+IfEl: ast::If
+    = "if" "(" <cond: BExp> ")" <then: Block> "else" <elsec: Block>
+    => ast::If::new_with_else(cond, then, elsec);
+
+Block: ast::Block
+    = "{" <v: (<Command> ";")*> <e: Command?> "}"
+    => match e {
+        None => v,
+        Some(e) => {
+            let mut v = v;
+            v.push(e);
+            v
+        }
+    };
 
 pub Ident: ast::Ident
     = <s:r"[a-zA-Z_][a-zA-Z0-9_]*">
@@ -89,7 +111,6 @@ pub BVal: ast::BVal = {
 
 pub BExp: ast::BExp = {
     BExp_0    => <>,
-    BVal      => ast::BExp::Val(<>),
 };
 
 BExp_0: ast::BExp = {
@@ -99,6 +120,19 @@ BExp_0: ast::BExp = {
     <lhs: RVal> "<" <rhs: RVal>  => ast::BExp::Le(lhs, rhs),
     <lhs: RVal> "<=" <rhs: RVal> => ast::BExp::Leq(lhs, rhs),
 
-    // BExp_1 => <>,
+    BExp_1 => <>,
 };
 
+BExp_1: ast::BExp = {
+    <lhs: BExp_1> "&&" <rhs: BExp_2>
+        => ast::BExp::And(Box::new(lhs), Box::new(rhs)),
+    <lhs: BExp_1> "||" <rhs: BExp_2>
+        => ast::BExp::Or(Box::new(lhs), Box::new(rhs)),
+
+    BExp_2 => <>,
+};
+
+BExp_2: ast::BExp = {
+    "(" <exp: BExp> ")" => exp,
+    BVal => ast::BExp::Val(<>),
+};

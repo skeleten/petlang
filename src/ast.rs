@@ -35,10 +35,39 @@ pub struct FuncCall {
     pub args: ParamList,
 }
 
+pub type Block = Vec<Command>;
+
 #[derive(Debug)]
 pub enum Command {
     RVal(RVal),
     Assign(Assign),
+    Block(Vec<Command>),
+    If(If),
+}
+
+#[derive(Debug)]
+pub struct If {
+    pub cond: BExp,
+    pub then_case: Block,
+    pub else_case: Block
+}
+
+impl If {
+    pub fn new(cond: BExp, then: Block) -> Self {
+        If {
+            cond: cond,
+            then_case: then,
+            else_case: Vec::new()
+        }
+    }
+
+    pub fn new_with_else(cond: BExp, then: Block, elsec: Block) -> Self {
+        If {
+            cond: cond,
+            then_case: then,
+            else_case: elsec,
+        }
+    }
 }
 
 #[derive(Debug)]
