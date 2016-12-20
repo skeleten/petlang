@@ -32,6 +32,7 @@ impl EvalContext {
     }
 
     pub fn assign(&mut self, name: &str, value: InternValue) {
+        // TODO: insert into inner if exists
         self.bindings.insert(name.to_string(), value);
     }
 }
